@@ -1,0 +1,91 @@
+#skills {
+    padding: 60px 20px;
+    background-color: #f8f9fa;
+  }
+  
+  #skills h1 {
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 40px;
+    color: #333;
+  }
+  
+  .s-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+  
+  .s-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    align-items: stretch; /* Ensures boxes are vertically aligned */
+  }
+  
+  .box {
+    border: 1.5px solid lightgray;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 300px; /* Ensure max width for all boxes */
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease; /* Add a transition for hover effect */
+  }
+  
+  .box:hover {
+    transform: translateY(-5px); /* Subtle hover effect */
+  }
+  
+  .box span {
+    font-size: 20px;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 10px;
+  }
+  
+  .list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .list li {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 8px;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .s-container {
+      gap: 1.5rem;
+    }
+  
+    .box {
+      max-width: 100%; /* Allow full width for smaller screens */
+      margin-bottom: 20px; /* Add margin between items for smaller screens */
+    }
+  
+    #skills h1 {
+      font-size: 32px; /* Adjust font size for smaller screens */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    #skills h1 {
+      font-size: 28px; /* Further reduce font size for very small screens */
+    }
+  
+    .list li {
+      font-size: 14px; /* Adjust list item font size for better readability */
+    }
+  }
+  
