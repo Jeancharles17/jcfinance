@@ -1,0 +1,156 @@
+
+
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+.mainBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  position: relative;
+  padding: 20px;
+  box-sizing: border-box;
+  color: white;
+  text-shadow: 1px 1px 2px black;
+}
+
+.mainBlock::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('/src/assets/finance.avif') no-repeat center center;
+  background-size: cover;
+  opacity: 0.6; 
+  z-index: -2;
+}
+
+.mainBlock::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); 
+  z-index: -1;
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+form {
+  background: rgba(255, 255, 255, 0.9); /* Slightly less transparent form background */
+  padding: 20px;
+  border-radius: 16px; 
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 400px;
+  color: black;
+}
+
+.regField, .submitBtn {
+  width: calc(100% - 20px);
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px; /* Round input fields */
+}
+
+.submitBtn {
+  background: #3498db;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 8px; /* Round submit button */
+}
+
+.submitBtn:hover {
+  background: #2980b9;
+}
+
+.Error {
+  color: #e74c3c;
+  margin-bottom: 20px;
+}
+
+.underLine {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.linkBtn {
+  background: none;
+  border: none;
+  color: #3498db;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.linkBtn:hover {
+  color: #2980b9;
+}
+
+.footer {
+  margin-top: 30px; 
+  text-align: center;
+  font-size: 18px; 
+  color: #ffffff;
+  text-shadow: 1px 1px 2px black;
+}
+
+.footer a {
+  margin: 0 10px;
+  color: #3498db;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+.downloadSection {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.downloadSection img {
+  width: 180px; /* Increase app icons size */
+  margin: 0 15px;
+}
+
+.socialMedia {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.socialMedia a {
+  margin: 0 15px;
+  color: #3498db;
+  transition: color 0.3s ease;
+  font-size: 32px; /* Increase social media icons size */
+}
+
+.socialMedia a:hover {
+  color: #2980b9;
+}
+
+/* Copyright section */
+.copyright {
+  margin-top: 40px;
+  font-size: 14px; 
+  text-align: center;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px black;
+}
