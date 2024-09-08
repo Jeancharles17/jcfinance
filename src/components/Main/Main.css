@@ -1,156 +1,149 @@
+/* Main.css */
 
-
-body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: Arial, sans-serif;
-}
-
+/* Main container styling */
 .mainBlock {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  position: relative;
+  max-width: 1000px;
+  margin: 0 auto;
   padding: 20px;
-  box-sizing: border-box;
-  color: white;
-  text-shadow: 1px 1px 2px black;
-}
-
-.mainBlock::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('/src/assets/finance.avif') no-repeat center center;
-  background-size: cover;
-  opacity: 0.6; 
-  z-index: -2;
-}
-
-.mainBlock::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); 
-  z-index: -1;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
 }
 
 h1 {
+  font-size: 2.5em;
+  color: #2c3e50;
   margin-bottom: 20px;
-  color: #ffffff;
+  font-weight: 700;
 }
 
-form {
-  background: rgba(255, 255, 255, 0.9); /* Slightly less transparent form background */
-  padding: 20px;
-  border-radius: 16px; 
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  width: 100%;
-  max-width: 400px;
-  color: black;
-}
-
-.regField, .submitBtn {
-  width: calc(100% - 20px);
-  margin: 10px 0;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px; /* Round input fields */
-}
-
-.submitBtn {
-  background: #3498db;
-  color: white;
-  cursor: pointer;
-  font-size: 16px;
-  border-radius: 8px; /* Round submit button */
-}
-
-.submitBtn:hover {
-  background: #2980b9;
-}
-
-.Error {
-  color: #e74c3c;
-  margin-bottom: 20px;
-}
-
+/* Styling for form switcher */
 .underLine {
-  margin-top: 20px;
-  font-size: 14px;
-  color: #ffffff;
+  display: inline-block;
+  margin-top: 15px;
+  font-size: 0.9em;
+  color: #7f8c8d;
 }
 
-.linkBtn {
+.underLine button {
   background: none;
   border: none;
   color: #3498db;
   cursor: pointer;
+  font-size: 1em;
+}
+
+.underLine button:hover {
   text-decoration: underline;
 }
 
-.linkBtn:hover {
-  color: #2980b9;
-}
-
+/* Footer section */
 .footer {
-  margin-top: 30px; 
+  margin-top: 40px;
+  background-color: #2c3e50;
+  padding: 20px;
+  border-radius: 8px;
+  color: #ecf0f1;
   text-align: center;
-  font-size: 18px; 
-  color: #ffffff;
-  text-shadow: 1px 1px 2px black;
-}
-
-.footer a {
-  margin: 0 10px;
-  color: #3498db;
-  text-decoration: none;
-}
-
-.footer a:hover {
-  text-decoration: underline;
 }
 
 .downloadSection {
-  margin-top: 20px;
-  text-align: center;
+  margin-bottom: 20px;
 }
 
-.downloadSection img {
-  width: 180px; /* Increase app icons size */
-  margin: 0 15px;
+.downloadSection p {
+  margin: 0;
+  font-size: 1.2em;
+  font-weight: 500;
 }
 
+.downloadSection a {
+  margin: 0 10px;
+  color: #ecf0f1;
+}
+
+.downloadSection a:hover {
+  color: #3498db;
+}
+
+/* Social Media Icons */
 .socialMedia {
-  margin-top: 20px;
-  text-align: center;
+  margin-bottom: 20px;
 }
 
 .socialMedia a {
   margin: 0 15px;
-  color: #3498db;
-  transition: color 0.3s ease;
-  font-size: 32px; /* Increase social media icons size */
+  color: #ecf0f1;
 }
 
 .socialMedia a:hover {
-  color: #2980b9;
+  color: #3498db;
 }
 
 /* Copyright section */
 .copyright {
-  margin-top: 40px;
-  font-size: 14px; 
-  text-align: center;
-  color: #ffffff;
-  text-shadow: 1px 1px 2px black;
+  font-size: 0.9em;
+  color: #95a5a6;
 }
+
+button.linkBtn {
+  background: none;
+  border: none;
+  color: #3498db;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+button.linkBtn:hover {
+  text-decoration: underline;
+}
+
+/* Loader when loading state */
+.mainBlock div {
+  font-size: 1.5em;
+  color: #95a5a6;
+}
+
+/* Form-specific styling */
+.loginForm, .registerForm {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+
+.loginForm h2, .registerForm h2 {
+  font-size: 1.5em;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.loginForm input, .registerForm input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.loginForm button, .registerForm button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background-color: #3498db;
+  color: white;
+  font-size: 1em;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.loginForm button:hover, .registerForm button:hover {
+  background-color: #2980b9;
+}
+
+
