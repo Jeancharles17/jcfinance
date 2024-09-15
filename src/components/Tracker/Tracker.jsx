@@ -5,6 +5,7 @@ import { Chart, registerables } from 'chart.js';
 import { auth, db, storage } from '../Config/Fire';
 import { ref, onValue, push, remove, set } from 'firebase/database';
 import { uploadBytes, getDownloadURL } from 'firebase/storage';
+import { PlaidLink } from 'react-plaid-link';
 import './Tracker.css';
 
 Chart.register(...registerables);
@@ -90,6 +91,8 @@ class Tracker extends Component {
             expenses: ['Rent', 'Groceries', 'Utilities'],
         },
         months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        plaidToken: null,
+        plaidTransactions: [],
     };
 
     componentDidMount() {
@@ -108,6 +111,127 @@ class Tracker extends Component {
             });
         }
     }
+
+    // handlePlaidSuccess = (publicToken) => {
+    //     // Send the public token to your backend to exchange it for an access token
+    //     fetch('/api/exchange_public_token', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify({ public_token: publicToken }),
+    //     })
+    //     .then((response) => response.json())
+    //     .then((data) => {
+    //         const accessToken = data.access_token;
+    //         this.fetchPlaidTransactions(accessToken);
+    //     })
+    //     .catch((error) => {
+    //         console.error('Error exchanging public token:', error);
+    //     });
+    // };
+    
+
+    // fetchPlaidTransactions = (accessToken) => {
+    //     fetch('/api/get_transactions', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify({ access_token: accessToken }),
+    //     })
+    //     .then((response) => response.json())
+    //     .then((transactions) => {
+    //         this.setState({ plaidTransactions: transactions });
+    //         this.categorizePlaidTransactions();
+    //     })
+    //     .catch((error) => {
+    //         console.error('Error fetching transactions:', error);
+    //     });
+    // };
+    
+    // categorizePlaidTransactions = () => {
+    //     const { plaidTransactions } = this.state;
+
+    //     plaidTransactions.forEach((transaction) => {
+    //         // Save to Firebase, just like other transactions
+    //         const { currentUID } = this.state;
+    //         const transactionsRef = ref(db, `Transactions/${currentUID}`);
+    //         push(transactionsRef, transaction);
+    //     });
+
+    //     this.setState((prevState) => ({
+    //         transactions: [...prevState.transactions, ...prevState.plaidTransactions],
+    //         plaidTransactions: [], // Clear Plaid transactions once processed
+    //     }), () => {
+    //         this.updateChartData();
+    //         this.updateSpendingChartData();
+    //     });
+    // };
+
+    // handlePlaidLinkError = (error) => {
+    //     console.error('Plaid link error:', error);
+    // };
+
+    handlePlaidSuccess = (publicToken, metadata) => {
+        // Send the public token to your backend to exchange it for an access token
+        fetch('/api/exchange_public_token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ public_token: publicToken }),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            const accessToken = data.access_token;
+            this.fetchPlaidTransactions(accessToken);
+        })
+        .catch((error) => {
+            console.error('Error exchanging public token:', error);
+        });
+    };
+
+    fetchPlaidTransactions = (accessToken) => {
+        fetch('/api/get_transactions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ access_token: accessToken }),
+        })
+        .then((response) => response.json())
+        .then((transactions) => {
+            this.setState({ plaidTransactions: transactions });
+            this.categorizePlaidTransactions();
+        })
+        .catch((error) => {
+            console.error('Error fetching transactions:', error);
+        });
+    };
+
+    categorizePlaidTransactions = () => {
+        const { plaidTransactions, currentUID } = this.state;
+
+        plaidTransactions.forEach((transaction) => {
+            // Save each transaction to Firebase
+            const transactionsRef = ref(db, `Transactions/${currentUID}`);
+            push(transactionsRef, transaction);
+        });
+
+        this.setState((prevState) => ({
+            transactions: [...prevState.transactions, ...prevState.plaidTransactions],
+            plaidTransactions: [], // Clear Plaid transactions once processed
+        }), () => {
+            this.updateChartData();
+            this.updateSpendingChartData();
+        });
+    };
+
+    handlePlaidError = (error) => {
+        console.error('Plaid link error:', error);
+    };
+
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.profilePictureUrl !== prevState.profilePictureUrl) {
@@ -394,7 +518,7 @@ class Tracker extends Component {
     };
 
     render() {
-        const { transactions, chatInput,isChatLoading,chatHistory,  selectedMonth, months, totalIncome, totalExpenses, remainingBalance, profilePictureUrl, showProfileUpload,predictedExpenses} = this.state;
+        const { transactions, chatInput,isChatLoading,chatHistory,  selectedMonth, months, totalIncome, totalExpenses, remainingBalance, profilePictureUrl, showProfileUpload,predictedExpenses,plaidToken} = this.state;
         
         return (
             <div className="tracker-container">
@@ -496,6 +620,45 @@ class Tracker extends Component {
                 <button onClick={this.clearBudget}>Clear All Transactions</button>
                 <button onClick={this.exportData}>Export Data</button>
                 <button onClick={this.budgetPrediction}>Predict Budget</button>
+
+                {/* plaid section */}
+                <div>
+                <h1>Connect Your Bank Account</h1>
+                <PlaidLink
+                    publicKey="66e2546d5021c6001a1fccf6"
+                    env="sandbox"
+                    product={['transactions']}
+                    onSuccess={this.handlePlaidSuccess}
+                    onExit={this.handlePlaidError}
+                    style={{
+                        backgroundColor: "#4CAF50", 
+                        color: "white", 
+                        padding: "12px 24px", 
+                        fontSize: "16px", 
+                        borderRadius: "8px", 
+                        border: "none", 
+                        cursor: "pointer", 
+                        display: "block", 
+                        margin: "20px auto", 
+                      }}
+                >
+                    Plaid
+                </PlaidLink>
+
+                {/* Optionally display fetched transactions */}
+                {this.state.transactions.length > 0 && (
+                    <div>
+                        <h2>Fetched Transactions:</h2>
+                        <ul>
+                            {this.state.transactions.map((transaction) => (
+                                <li key={transaction.id}>
+                                    {transaction.date} - {transaction.category}: ${transaction.price}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+            </div>
 
                 {/* Chatbot Section */}
                 <div className="chatbot-section">

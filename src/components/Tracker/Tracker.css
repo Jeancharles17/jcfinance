@@ -1,233 +1,178 @@
-/* Tracker.css */
 
-/* General styles */
-body {
-  font-family: 'Roboto', sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f4f4f9;
+.tracker-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
 h3, h4 {
-  color: #34495e;
-  margin: 10px 0;
+  color: #333;
 }
 
-h4 {
-  font-size: 1.2rem;
-}
-
-/* Container */
-.tracker-container {
-  max-width: 1200px;
-  margin: 20px auto;
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-}
-
-/* Profile and Settings */
 .profile-settings {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 20px;
 }
 
 .profile-settings img.profile-picture {
-  width: 50px;
-  height: 50px;
   border-radius: 50%;
-  margin-right: 10px;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
 }
 
 .profile-settings select, .profile-settings input[type="file"] {
-  font-size: 1rem;
-  padding: 5px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
   margin-left: 10px;
 }
 
-/* Transaction Form */
 .form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 15px;
-  margin: 20px 0;
+  margin-bottom: 20px;
 }
 
 .form label {
-  color: #2c3e50;
-  font-size: 1rem;
+  display: block;
   margin-bottom: 5px;
+  color: #555;
 }
 
-.form input, .form select, .form button {
+.form select, .form input {
+  width: 100%;
   padding: 10px;
-  font-size: 1rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
 .form button {
-  background-color: #27ae60;
-  color: white;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
   border: none;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 .form button:hover {
-  background-color: #2ecc71;
+  background-color: #0056b3;
 }
 
-/* Transaction List */
 .transaction-list {
-  margin: 20px 0;
+  margin-bottom: 20px;
 }
 
 .transaction-item {
   display: flex;
   justify-content: space-between;
-  background-color: #ecf0f1;
-  padding: 10px 15px;
-  margin: 10px 0;
-  border-radius: 5px;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.transaction-info, .transaction-details {
+  display: flex;
   align-items: center;
 }
 
-.transaction-item p {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.transaction-details p {
-  color: #e74c3c;
-}
-
-.transaction-details p:nth-child(1) {
-  color: #27ae60;
-}
-
-.transaction-item button {
-  background-color: #e74c3c;
-  color: white;
-  padding: 5px 10px;
+.transaction-details button {
+  margin-left: 10px;
+  background-color: #dc3545;
+  color: #fff;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-.transaction-item button:hover {
-  background-color: #c0392b;
+.transaction-details button:hover {
+  background-color: #c82333;
 }
 
-/* Charts */
 .chart {
-  margin: 20px 0;
-  padding: 20px;
-  background-color: #f7f9f9;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
 }
 
-.chart h3 {
-  text-align: center;
-  margin-bottom: 10px;
+.predicted-expenses ul {
+  list-style: none;
+  padding: 0;
 }
 
-/* Buttons */
-button {
-  padding: 10px 20px;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+.predicted-expenses li {
+  background-color: #e9ecef;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 4px;
 }
 
-button:hover {
-  background-color: #2980b9;
-}
-
-button:disabled {
-  background-color: #bdc3c7;
-}
-
-/* Chat Section */
 .chatbot-section {
-  margin: 20px 0;
+  margin-top: 20px;
   padding: 20px;
-  background-color: #ecf0f1;
-  border-radius: 10px;
-}
-
-.chatbot-section h3 {
-  text-align: center;
-  margin-bottom: 15px;
+  background-color: #e9ecef;
+  border-radius: 8px;
 }
 
 .chat-history {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  padding: 15px;
   max-height: 300px;
-  overflow-y: scroll;
-  margin-bottom: 15px;
+  overflow-y: auto;
+  margin-bottom: 10px;
 }
 
 .chat-message {
-  padding: 10px;
-  border-radius: 5px;
   margin-bottom: 10px;
-  background-color: #f0f3f4;
 }
 
 .chat-message.user {
-  background-color: #d5f5e3;
   text-align: right;
 }
 
-.chat-message.assistant {
-  background-color: #e8f6f3;
+.chat-message.ai {
+  text-align: left;
 }
 
-.chatbot-section input {
-  width: calc(100% - 110px);
+input[type="text"] {
+  width: calc(100% - 100px);
   padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
   margin-right: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
-.chatbot-section button {
-  padding: 10px 15px;
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
   border: none;
-  background-color: #27ae60;
-  color: white;
+  border-radius: 4px;
   cursor: pointer;
-  border-radius: 5px;
 }
 
-/* Responsive Design */
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive Styles */
 @media (max-width: 768px) {
-  .form, .transaction-item {
-      grid-template-columns: 1fr;
-  }
-
-  .tracker-container {
-      padding: 15px;
-  }
-
   .profile-settings {
       flex-direction: column;
       align-items: flex-start;
   }
 
-  .chatbot-section input {
-      width: calc(100% - 80px);
+  .profile-settings img.profile-picture {
+      width: 80px;
+      height: 80px;
+  }
+
+  .form button {
+      width: 100%;
+  }
+
+  input[type="text"] {
+      width: calc(100% - 120px);
+  }
+
+  .transaction-list {
+      font-size: 14px;
   }
 }
