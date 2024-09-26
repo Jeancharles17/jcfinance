@@ -152,7 +152,7 @@ button:hover {
   background-color: #0056b3;
 }
 
-/* Responsive Styles */
+
 @media (max-width: 768px) {
   .profile-settings {
       flex-direction: column;
@@ -176,3 +176,6 @@ button:hover {
       font-size: 14px;
   }
 }
+
+
+

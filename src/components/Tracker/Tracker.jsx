@@ -34,16 +34,24 @@ class Tracker extends Component {
                     label: 'Income',
                     data: [],
                     backgroundColor: [
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 99, 132, 1)',   // Red
+                        'rgba(54, 162, 235, 1)',   // Sky Blue
+                        'rgba(255, 206, 86, 1)',   // Yellow
+                        'rgba(75, 192, 192, 1)',   // Teal
+                        'rgba(153, 102, 255, 1)',  // Purple
+                        'rgba(255, 159, 64, 1)',   // Orange
+                        'rgba(201, 203, 207, 1)',  // Gray
+                        'rgba(0, 128, 0, 1)',      // Green
                     ],
                     borderColor: [
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 99, 132, 1)',   // Red
+                        'rgba(54, 162, 235, 1)',   // Sky Blue
+                        'rgba(255, 206, 86, 1)',   // Yellow
+                        'rgba(75, 192, 192, 1)',   // Teal
+                        'rgba(153, 102, 255, 1)',  // Purple
+                        'rgba(255, 159, 64, 1)',   // Orange
+                        'rgba(201, 203, 207, 1)',  // Gray
+                        'rgba(0, 128, 0, 1)',      // Green
                     ],
                     borderWidth: 1,
                 },
@@ -56,18 +64,27 @@ class Tracker extends Component {
                     label: 'Expenses',
                     data: [],
                     backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(255, 159, 64, 0.2)',
-                        'rgba(255, 205, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(255, 99, 132, 0.5)',  // Light Pink
+                        'rgba(255, 159, 64, 0.5)',   // Light Orange
+                        'rgba(255, 205, 86, 0.5)',   // Light Yellow
+                        'rgba(75, 192, 192, 0.5)',   // Light Teal
+                        'rgba(54, 162, 235, 0.5)',   // Light Blue
+                        'rgba(153, 102, 255, 0.5)',  // Light Purple
+                        'rgba(255, 99, 132, 0.5)',   // Light Pink
+                        'rgba(255, 206, 86, 0.5)'    // Light Yellow
                     ],
                     borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(255, 159, 64, 1)',
-                        'rgba(255, 205, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)',    // Solid Pink
+                        'rgba(255, 159, 64, 1)',     // Solid Orange
+                        'rgba(255, 205, 86, 1)',     // Solid Yellow
+                        'rgba(75, 192, 192, 1)',     // Solid Teal
+                        'rgba(54, 162, 235, 1)',     // Solid Blue
+                        'rgba(153, 102, 255, 1)',    // Solid Purple
+                        'rgba(255, 99, 132, 1)',      // Solid Pink
+                        'rgba(255, 206, 86, 1)'       // Solid Yellow
                     ],
                     borderWidth: 1,
+                    
                 },
             ],
         },
@@ -87,8 +104,8 @@ class Tracker extends Component {
         profilePictureUrl: '',
         showProfileUpload: true,
         categories: {
-            income: ['Salary', 'Bonus', 'Interest'],
-            expenses: ['Rent', 'Groceries', 'Utilities'],
+            income: ['Salary', 'Bonus', 'Interest', 'Investment', 'Alimony', 'Stipend', 'Pension', 'Other'],
+            expenses: ['Rent', 'Groceries', 'Utilities', 'Entertainment', 'Transportation', 'Medical', 'Bills', 'Other'],
         },
         months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         plaidToken: null,
@@ -523,10 +540,9 @@ class Tracker extends Component {
         return (
             <div className="tracker-container">
                 <div className="profile-settings">
-                    <img className="profile-picture" src={profilePictureUrl || "default-profile.png"} alt="Profile" />
+                    {/* <img className="profile-picture" src={profilePictureUrl || "default-profile.png"} alt="Profile" /> */}
                     <select onChange={this.handleSettingChange}>
                         <option value="0">Settings</option>
-                        <option value="profile">Update Profile Picture</option>
                         <option value="logout">Logout</option>
                     </select>
                     <input
@@ -688,6 +704,8 @@ class Tracker extends Component {
             </div>
         );
     }
+
+    
 }
 
 export default Tracker;
