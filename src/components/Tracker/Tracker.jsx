@@ -6,6 +6,8 @@ import { auth, db, storage } from '../Config/Fire';
 import { ref, onValue, push, remove, set } from 'firebase/database';
 import { uploadBytes, getDownloadURL } from 'firebase/storage';
 import { PlaidLink } from 'react-plaid-link';
+import 'react-tabs/style/react-tabs.css';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './Tracker.css';
 
 Chart.register(...registerables);
@@ -110,6 +112,12 @@ class Tracker extends Component {
         months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         plaidToken: null,
         plaidTransactions: [],
+        goalName: '',
+        targetAmount: 0,
+        deadline: '',
+        monthlyContribution: 0,
+        savingsProgress: 0,
+        notifications: []
     };
 
     componentDidMount() {
@@ -128,67 +136,6 @@ class Tracker extends Component {
             });
         }
     }
-
-    // handlePlaidSuccess = (publicToken) => {
-    //     // Send the public token to your backend to exchange it for an access token
-    //     fetch('/api/exchange_public_token', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //         body: JSON.stringify({ public_token: publicToken }),
-    //     })
-    //     .then((response) => response.json())
-    //     .then((data) => {
-    //         const accessToken = data.access_token;
-    //         this.fetchPlaidTransactions(accessToken);
-    //     })
-    //     .catch((error) => {
-    //         console.error('Error exchanging public token:', error);
-    //     });
-    // };
-    
-
-    // fetchPlaidTransactions = (accessToken) => {
-    //     fetch('/api/get_transactions', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //         body: JSON.stringify({ access_token: accessToken }),
-    //     })
-    //     .then((response) => response.json())
-    //     .then((transactions) => {
-    //         this.setState({ plaidTransactions: transactions });
-    //         this.categorizePlaidTransactions();
-    //     })
-    //     .catch((error) => {
-    //         console.error('Error fetching transactions:', error);
-    //     });
-    // };
-    
-    // categorizePlaidTransactions = () => {
-    //     const { plaidTransactions } = this.state;
-
-    //     plaidTransactions.forEach((transaction) => {
-    //         // Save to Firebase, just like other transactions
-    //         const { currentUID } = this.state;
-    //         const transactionsRef = ref(db, `Transactions/${currentUID}`);
-    //         push(transactionsRef, transaction);
-    //     });
-
-    //     this.setState((prevState) => ({
-    //         transactions: [...prevState.transactions, ...prevState.plaidTransactions],
-    //         plaidTransactions: [], // Clear Plaid transactions once processed
-    //     }), () => {
-    //         this.updateChartData();
-    //         this.updateSpendingChartData();
-    //     });
-    // };
-
-    // handlePlaidLinkError = (error) => {
-    //     console.error('Plaid link error:', error);
-    // };
 
     handlePlaidSuccess = (publicToken, metadata) => {
         // Send the public token to your backend to exchange it for an access token
@@ -534,79 +481,104 @@ class Tracker extends Component {
         this.setState({ chatInput: e.target.value });
     };
 
+    
+     saveBudgetPlan = () => {
+        const { targetAmount, deadline, monthlyContribution, goalName } = this.state;
+
+        // Validate inputs
+        if (!goalName || targetAmount <= 0 || monthlyContribution <= 0 || !deadline) {
+            alert('Please fill out all fields with valid values.');
+            return;
+        }
+
+        // Save the budget plan data to state
+        this.setState({
+            notifications: [...this.state.notifications, `New budget plan '${goalName}' has been saved.`],
+        });
+
+        // Optionally, send this data to a backend API or database
+    };
+
+    // Calculates months remaining until deadline
+    calculateMonthsRemaining = (deadline) => {
+        const currentDate = new Date();
+        const deadlineDate = new Date(deadline);
+        const months = (deadlineDate.getFullYear() - currentDate.getFullYear()) * 12 + (deadlineDate.getMonth() - currentDate.getMonth());
+        return months > 0 ? months : 1; // Avoid division by 0
+    };
+
+    // AI Function: Calculate how much user should save each month
+    calculateMonthlySavings = (targetAmount, deadline, currentBalance) => {
+        const monthsRemaining = this.calculateMonthsRemaining(deadline);
+        const neededMonthlySavings = (targetAmount - currentBalance) / monthsRemaining;
+        return neededMonthlySavings;
+    };
+
+    // AI Function: Track savings progress
+    trackProgress = (savings, targetAmount) => {
+        const percentageComplete = (savings / targetAmount) * 100;
+        return percentageComplete;
+    };
+
+    // AI Function: Check if user is falling behind on their savings goal
+    checkIfFallingBehind = (savings, targetAmount, deadline) => {
+        const monthsRemaining = this.calculateMonthsRemaining(deadline);
+        const neededMonthlySavings = (targetAmount - savings) / monthsRemaining;
+
+        if (neededMonthlySavings > this.state.monthlyContribution) {
+            this.sendRealTimeNotification('You are falling behind your savings goal. Consider increasing your contributions.');
+        }
+    };
+
+    // Sends real-time notifications to users
+    sendRealTimeNotification = (message) => {
+        this.setState({
+            notifications: [...this.state.notifications, { message, timestamp: new Date() }]
+        });
+    };
+    
+    
+    
+    
+
     render() {
-        const { transactions, chatInput,isChatLoading,chatHistory,  selectedMonth, months, totalIncome, totalExpenses, remainingBalance, profilePictureUrl, showProfileUpload,predictedExpenses,plaidToken} = this.state;
+        const { transactions, chatInput,isChatLoading,chatHistory,  selectedMonth, months, totalIncome, totalExpenses, remainingBalance, profilePictureUrl, showProfileUpload,predictedExpenses,plaidToken,goalName, targetAmount, deadline, monthlyContribution, savingsProgress, notifications, currentSavings} = this.state;
         
         return (
-            <div className="tracker-container">
-                <div className="profile-settings">
-                    {/* <img className="profile-picture" src={profilePictureUrl || "default-profile.png"} alt="Profile" /> */}
-                    <select onChange={this.handleSettingChange}>
-                        <option value="0">Settings</option>
-                        <option value="logout">Logout</option>
-                    </select>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={this.handleProfilePictureChange}
-                        style={{ display: showProfileUpload ? 'block' : 'none' }}
-                    />
-                </div>
+         
 
-                <h3>Tracker</h3>
-                <h4>Total Income: ${totalIncome.toFixed(2)}</h4>
-                <h4>Total Expenses: ${totalExpenses.toFixed(2)}</h4>
-                <h4>Remaining Balance: ${remainingBalance.toFixed(2)}</h4>
 
-                <div className="form">
-                    <label>Type:</label>
-                    <select value={this.state.transactionType} onChange={this.handleChange('transactionType')}>
-                        <option value="0">Select Type</option>
-                        <option value="deposit">Income</option>
-                        <option value="expense">Expense</option>
-                    </select>
 
-                    <label>Category:</label>
-                    <select value={this.state.category} onChange={this.handleChange('category')}>
-                        <option value="0">Select Category</option>
-                        {(this.state.transactionType === 'deposit' ? this.state.categories.income : this.state.categories.expenses).map(category =>
-                            <option key={category} value={category}>{category}</option>
-                        )}
-                    </select>
+<div className="tracker-container">
+<h1 className="app-title">Financial Tracker</h1>
+<h2 className="username-display">Hello, {this.props.auth}!</h2>
 
-                    <label>Amount:</label>
-                    <input type="number" value={this.state.price} onChange={this.handleChange('price')} />
+<Tabs>
+    <TabList>
+        <Tab>Overview</Tab>
+        <Tab>Transactions</Tab>
+        <Tab>Budget Goals</Tab>
+        <Tab>AI Assistant</Tab>
+        <Tab>Connect Your Bank Account</Tab>
+    </TabList>
 
-                    <label>Date:</label>
-                    <input type="date" value={this.state.date} onChange={this.handleChange('date')} />
-
-                    <button onClick={this.addNewTransaction}>Add Transaction</button>
-                </div>
-
-                <h3>Transaction History</h3>
-                <select value={selectedMonth} onChange={this.handleMonthChange}>
-                    {months.map(month => (
-                        <option key={month} value={month}>{month}</option>
-                    ))}
+    {/* Overview Tab */}
+    <TabPanel>
+        <div className="overview-content">
+            <div className="profile-settings">
+                <select onChange={this.handleSettingChange}>
+                    <option value="0">Settings</option>
+                    <option value="logout">Logout</option>
                 </select>
-                <div className="transaction-list">
-                    {transactions
-                        .filter(transaction => new Date(transaction.date).toLocaleString('default', { month: 'short' }) === selectedMonth)
-                        .sort((a, b) => new Date(b.date) - new Date(a.date))
-                        .map(transaction => (
-                            <div key={transaction.id} className="transaction-item">
-                                <div className="transaction-info">
-                                    <p>{new Date(transaction.date).toLocaleDateString()}</p>
-                                    <p>{transaction.category}</p>
-                                </div>
-                                <div className="transaction-details">
-                                    <p>{transaction.type === 'deposit' ? `+ $${transaction.price.toFixed(2)}` : `- $${transaction.price.toFixed(2)}`}</p>
-                                    <button onClick={() => this.deleteTransaction(transaction.id)}>Delete</button>
-                                </div>
-                            </div>
-                        ))}
-                </div>
+                
+            </div>
 
+            <h3>Tracker</h3>
+            <h4>Total Income: ${totalIncome.toFixed(2)}</h4>
+            <h4>Total Expenses: ${totalExpenses.toFixed(2)}</h4>
+            <h4>Remaining Balance: ${remainingBalance.toFixed(2)}</h4>
+
+            <div className="chart-container">
                 <div className="chart">
                     <h3>Income</h3>
                     <Pie data={this.state.incomeChartData} />
@@ -616,92 +588,193 @@ class Tracker extends Component {
                     <h3>Expenses</h3>
                     <Pie data={this.state.expenseChartData} />
                 </div>
+            </div>
 
-                <div className="chart">
-                    <h3>Monthly Spending</h3>
-                    <Line data={this.state.spendingChartData} />
-                </div>
-                 {/* Predicted Expenses Section */}
-                 <div className="predicted-expenses">
-                    <h4>Predicted Expenses for Next Month:</h4>
-                    <ul>
-                        {Object.keys(predictedExpenses).map(category => (
-                            <li key={category}>
-                                {category}: ${predictedExpenses[category]}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+            <div className="chart">
+                <h3>Monthly Spending</h3>
+                <Line data={this.state.spendingChartData} />
+            </div>
 
-                <button onClick={this.clearBudget}>Clear All Transactions</button>
-                <button onClick={this.exportData}>Export Data</button>
-                <button onClick={this.budgetPrediction}>Predict Budget</button>
+            {/* Predicted Expenses Section */}
+            <div className="predicted-expenses">
+                <h4>Predicted Expenses for Next Month:</h4>
+                <ul>
+                    {Object.keys(predictedExpenses).map(category => (
+                        <li key={category}>
+                            {category}: ${predictedExpenses[category]}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    </TabPanel>
 
-                {/* plaid section */}
-                <div>
-                <h1>Connect Your Bank Account</h1>
-                <PlaidLink
-                    publicKey="66e2546d5021c6001a1fccf6"
-                    env="sandbox"
-                    product={['transactions']}
-                    onSuccess={this.handlePlaidSuccess}
-                    onExit={this.handlePlaidError}
-                    style={{
-                        backgroundColor: "#4CAF50", 
-                        color: "white", 
-                        padding: "12px 24px", 
-                        fontSize: "16px", 
-                        borderRadius: "8px", 
-                        border: "none", 
-                        cursor: "pointer", 
-                        display: "block", 
-                        margin: "20px auto", 
-                      }}
-                >
-                    Plaid
-                </PlaidLink>
+    {/* Transactions Tab */}
+    <TabPanel>
+        <h3>Transaction History</h3>
+        <div className="form">
+            {/* Transaction Input Form */}
+            <label>Type:</label>
+            <select value={this.state.transactionType} onChange={this.handleChange('transactionType')}>
+                <option value="0">Select Type</option>
+                <option value="deposit">Income</option>
+                <option value="expense">Expense</option>
+            </select>
 
-                {/* Optionally display fetched transactions */}
-                {this.state.transactions.length > 0 && (
-                    <div>
-                        <h2>Fetched Transactions:</h2>
-                        <ul>
-                            {this.state.transactions.map((transaction) => (
-                                <li key={transaction.id}>
-                                    {transaction.date} - {transaction.category}: ${transaction.price}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+            <label>Category:</label>
+            <select value={this.state.category} onChange={this.handleChange('category')}>
+                <option value="0">Select Category</option>
+                {(this.state.transactionType === 'deposit' ? this.state.categories.income : this.state.categories.expenses).map(category =>
+                    <option key={category} value={category}>{category}</option>
                 )}
-            </div>
+            </select>
 
-                {/* Chatbot Section */}
-                <div className="chatbot-section">
-                    <h3>AI Financial Assistant</h3>
+            <label>Amount:</label>
+            <input type="number" value={this.state.price} onChange={this.handleChange('price')} />
 
-                    {/* Chat history */}
-                    <div className="chat-history">
-                        {chatHistory.map((chat, index) => (
-                            <div key={index} className={`chat-message ${chat.sender}`}>
-                                <p>{chat.message}</p>
-                            </div>
-                        ))}
+            <label>Date:</label>
+            <input type="date" value={this.state.date} onChange={this.handleChange('date')} />
+
+            <button onClick={this.addNewTransaction}>Add Transaction</button>
+        </div>
+
+        <select value={selectedMonth} onChange={this.handleMonthChange}>
+            {months.map(month => (
+                <option key={month} value={month}>{month}</option>
+            ))}
+        </select>
+
+        <div className="transaction-list">
+            {transactions
+                .filter(transaction => new Date(transaction.date).toLocaleString('default', { month: 'short' }) === selectedMonth)
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .map(transaction => (
+                    <div key={transaction.id} className="transaction-item">
+                        <div className="transaction-info">
+                            <p>{new Date(transaction.date).toLocaleDateString()}</p>
+                            <p>{transaction.category}</p>
+                        </div>
+                        <div className="transaction-details">
+                            <p>{transaction.type === 'deposit' ? `+ $${transaction.price.toFixed(2)}` : `- $${transaction.price.toFixed(2)}`}</p>
+                            <button onClick={() => this.deleteTransaction(transaction.id)}>Delete</button>
+                        </div>
                     </div>
+                ))}
+        </div>
 
-                    {/* Chat input */}
-                    <input
-                        type="text"
-                        placeholder="Ask me a financial question..."
-                        value={chatInput}
-                        onChange={this.handleChatInputChange}
-                        disabled={isChatLoading}
-                    />
-                    <button onClick={this.handleChatSubmit} disabled={isChatLoading}>
-                        {isChatLoading ? 'Loading...' : 'Send'}
-                    </button>
-                </div>
+        <button onClick={this.clearBudget}>Clear All Transactions</button>
+        <button onClick={this.exportData}>Export Data</button>
+        <button onClick={this.budgetPrediction}>Predict Budget</button>
+    </TabPanel>
+
+    {/* Budget Goals Tab */}
+    <TabPanel>
+        <div className="budget-customization">
+            <h3>Customize Your Budget Plan</h3>
+            <label>Goal Name:</label>
+            <input type="text" value={goalName} onChange={this.handleChange('goalName')} />
+
+            <label>Target Amount:</label>
+            <input type="number" value={targetAmount} onChange={this.handleChange('targetAmount')} />
+
+            <label>Deadline:</label>
+            <input type="date" value={deadline} onChange={this.handleChange('deadline')} />
+
+            <label>Monthly Contribution:</label>
+            <input type="number" value={monthlyContribution} onChange={this.handleChange('monthlyContribution')} />
+
+            <button onClick={this.saveBudgetPlan}>Save Budget Plan</button>
+
+            {/* Display savings progress */}
+            <div className="progress-section">
+                <h3>{goalName} Progress</h3>
+                <progress value={this.trackProgress(remainingBalance, targetAmount)} max="100"></progress>
+                <p>{this.trackProgress(remainingBalance, targetAmount).toFixed(2)}% complete</p>
             </div>
+        </div>
+    </TabPanel>
+
+    {/* AI Assistant Tab */}
+    <TabPanel>
+        <div className="chatbot-section">
+            <h3>AI Financial Assistant</h3>
+
+            {/* Chat history */}
+            <div className="chat-history">
+                {chatHistory.map((chat, index) => (
+                    <div key={index} className={`chat-message ${chat.sender}`}>
+                        <p>{chat.message}</p>
+                    </div>
+                ))}
+            </div>
+
+            {/* Chat input */}
+            <input
+                type="text"
+                placeholder="Ask me a financial question..."
+                value={chatInput}
+                onChange={this.handleChatInputChange}
+                disabled={isChatLoading}
+            />
+            <button onClick={this.handleChatSubmit} disabled={isChatLoading}>
+                {isChatLoading ? 'Loading...' : 'Send'}
+            </button>
+        </div>
+    </TabPanel>
+
+    {/* Connect Your Bank Account Tab */}
+    <TabPanel>
+        <h1>Connect Your Bank Account</h1>
+        <PlaidLink
+            publicKey="66e2546d5021c6001a1fccf6"
+            env="sandbox"
+            product={['transactions']}
+            onSuccess={this.handlePlaidSuccess}
+            onExit={this.handlePlaidError}
+            style={{
+                backgroundColor: "#4CAF50",
+                color: "white",
+                padding: "12px 24px",
+                fontSize: "16px",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+                display: "block",
+                margin: "20px auto",
+            }}
+        >
+            Connect to Banks
+        </PlaidLink>
+
+        {/* Optionally display fetched transactions */}
+        {this.state.transactions.length > 0 && (
+            <div>
+                <h2>Fetched Transactions:</h2>
+                <ul>
+                    {this.state.transactions.map((transaction) => (
+                        <li key={transaction.id}>
+                            {transaction.date} - {transaction.category}: ${transaction.price}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        )}
+
+        {/* Notifications */}
+        <div className="notifications-section">
+            <h4>Notifications:</h4>
+            <ul>
+                {notifications.map((notification, index) => (
+                    <li key={index}>
+                        {notification.message} - {notification.timestamp ? new Date(notification.timestamp).toLocaleString() : 'N/A'}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    </TabPanel>
+</Tabs>
+</div>
+            
         );
     }
 
@@ -709,6 +782,5 @@ class Tracker extends Component {
 }
 
 export default Tracker;
-
 
 
